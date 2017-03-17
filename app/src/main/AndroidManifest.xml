@@ -16,6 +16,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".tasks.StatisticsActivity"></activity>
+        <activity android:name="com.example.sulemanshakil.todoapp.addedittask.AddEditTaskActivity" />
     </application>
 
 </manifest>

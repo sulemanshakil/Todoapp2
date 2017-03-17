@@ -37,6 +37,11 @@ public class TasksPresenter implements TasksContract.Presenter {
     }
 
     @Override
+    public void result(int requestCode, int resultCode) {
+
+    }
+
+    @Override
     public void loadTasks(boolean forceUpdate) {
         loadTasks(forceUpdate || mFirstLoad, true);
         mFirstLoad = false;
@@ -177,6 +182,11 @@ public class TasksPresenter implements TasksContract.Presenter {
         mTasksRepository.activateTask(activeTask);
         mTasksView.showTaskMarkedActive();
         loadTasks(false, false);
+    }
+
+    @Override
+    public void clearCompletedTasks() {
+
     }
 
     @Override

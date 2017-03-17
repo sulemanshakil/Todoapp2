@@ -50,6 +50,8 @@ public interface TasksContract {
 
     interface Presenter extends BasePresenter {
 
+        void result(int requestCode, int resultCode);
+
         void loadTasks(boolean forceUpdate);
 
         void addNewTask();
@@ -60,7 +62,10 @@ public interface TasksContract {
 
         void activateTask(@NonNull Task activeTask);
 
+        void clearCompletedTasks();
+
         void setFiltering(TasksFilterType requestType);
+
 
         TasksFilterType getFiltering();
 
