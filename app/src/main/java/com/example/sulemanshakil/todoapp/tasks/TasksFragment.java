@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.example.sulemanshakil.todoapp.R;
 import com.example.sulemanshakil.todoapp.addedittask.AddEditTaskActivity;
 import com.example.sulemanshakil.todoapp.data.Task;
+import com.example.sulemanshakil.todoapp.taskdetail.TaskDetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -162,7 +163,28 @@ public class TasksFragment  extends Fragment implements TasksContract.View {
 
     @Override
     public void showFilteringPopUpMenu() {
+        PopupMenu popup = new PopupMenu(getContext(), getActivity().findViewById(R.id.menu_filter));
+        popup.getMenuInflater().inflate(R.menu.filter_tasks, popup.getMenu());
 
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.active:
+                        mPresenter.setFiltering(TasksFilterType.ACTIVE_TASKS);
+                        break;
+                    case R.id.completed:
+                        mPresenter.setFiltering(TasksFilterType.COMPLETED_TASKS);
+                        break;
+                    default:
+                        mPresenter.setFiltering(TasksFilterType.ALL_TASKS);
+                        break;
+                }
+                mPresenter.loadTasks(false);
+                return true;
+            }
+        });
+
+        popup.show();
     }
 
     /**
@@ -277,9 +299,9 @@ public class TasksFragment  extends Fragment implements TasksContract.View {
     public void showTaskDetailsUi(String taskId) {
         // in it's own Activity, since it makes more sense that way and it gives us the flexibility
         // to show some Intent stubbing.
-    //    Intent intent = new Intent(getContext(), TaskDetailActivity.class);
-    //    intent.putExtra(TaskDetailActivity.EXTRA_TASK_ID, taskId);
-    //    startActivity(intent);
+        Intent intent = new Intent(getContext(), TaskDetailActivity.class);
+        intent.putExtra(TaskDetailActivity.EXTRA_TASK_ID, taskId);
+        startActivity(intent);
     }
 
     @Override

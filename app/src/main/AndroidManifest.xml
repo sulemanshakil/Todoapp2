@@ -15,8 +15,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".tasks.StatisticsActivity"></activity>
         <activity android:name="com.example.sulemanshakil.todoapp.addedittask.AddEditTaskActivity" />
+        <activity android:name="com.example.sulemanshakil.todoapp.taskdetail.TaskDetailActivity" />
+        <activity android:name="com.example.sulemanshakil.todoapp.statistics.StatisticsActivity" />
+
     </application>
 
 </manifest>

@@ -13,15 +13,15 @@ import com.example.sulemanshakil.todoapp.data.source.local.TasksPersistenceContr
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.support.test.espresso.core.deps.guava.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 
-
-public class TasksLocalDataSource implements TasksDataSource {
+public class TasksLocalDataSource  implements TasksDataSource {
 
     private static TasksLocalDataSource INSTANCE;
 
     private TasksDbHelper mDbHelper;
+
     // Prevent direct instantiation.
     private TasksLocalDataSource(@NonNull Context context) {
         checkNotNull(context);
@@ -35,6 +35,10 @@ public class TasksLocalDataSource implements TasksDataSource {
         return INSTANCE;
     }
 
+    /**
+     * Note: {@link LoadTasksCallback#onDataNotAvailable()} is fired if the database doesn't exist
+     * or the table is empty.
+     */
     @Override
     public void getTasks(@NonNull LoadTasksCallback callback) {
         List<Task> tasks = new ArrayList<Task>();
@@ -74,11 +78,15 @@ public class TasksLocalDataSource implements TasksDataSource {
         } else {
             callback.onTasksLoaded(tasks);
         }
+
     }
 
+    /**
+     * Note: {@link GetTaskCallback#onDataNotAvailable()} is fired if the {@link Task} isn't
+     * found.
+     */
     @Override
     public void getTask(@NonNull String taskId, @NonNull GetTaskCallback callback) {
-
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         String[] projection = {
@@ -117,7 +125,6 @@ public class TasksLocalDataSource implements TasksDataSource {
         } else {
             callback.onDataNotAvailable();
         }
-
     }
 
     @Override
@@ -153,7 +160,8 @@ public class TasksLocalDataSource implements TasksDataSource {
 
     @Override
     public void completeTask(@NonNull String taskId) {
-
+        // Not required for the local data source because the {@link TasksRepository} handles
+        // converting from a {@code taskId} to a {@link task} using its cached data.
     }
 
     @Override
@@ -173,7 +181,8 @@ public class TasksLocalDataSource implements TasksDataSource {
 
     @Override
     public void activateTask(@NonNull String taskId) {
-
+        // Not required for the local data source because the {@link TasksRepository} handles
+        // converting from a {@code taskId} to a {@link task} using its cached data.
     }
 
     @Override
@@ -190,7 +199,8 @@ public class TasksLocalDataSource implements TasksDataSource {
 
     @Override
     public void refreshTasks() {
-
+        // Not required because the {@link TasksRepository} handles the logic of refreshing the
+        // tasks from all the available data sources.
     }
 
     @Override

@@ -8,9 +8,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.example.sulemanshakil.todoapp.data.Task;
 import com.example.sulemanshakil.todoapp.data.source.TasksDataSource;
 
-public class AddEditTaskPresenter  implements AddEditTaskContract.Presenter,
-        TasksDataSource.GetTaskCallback{
-
+public class AddEditTaskPresenter implements AddEditTaskContract.Presenter,
+        TasksDataSource.GetTaskCallback {
     @NonNull
     private final TasksDataSource mTasksRepository;
 
@@ -22,7 +21,14 @@ public class AddEditTaskPresenter  implements AddEditTaskContract.Presenter,
 
     private boolean mIsDataMissing;
 
-
+    /**
+     * Creates a presenter for the add/edit view.
+     *
+     * @param taskId ID of the task to edit or null for a new task
+     * @param tasksRepository a repository of data for tasks
+     * @param addTaskView the add/edit view
+     * @param shouldLoadDataFromRepo whether data needs to be loaded or not (for config changes)
+     */
     public AddEditTaskPresenter(@Nullable String taskId, @NonNull TasksDataSource tasksRepository,
                                 @NonNull AddEditTaskContract.View addTaskView, boolean shouldLoadDataFromRepo) {
         mTaskId = taskId;
@@ -56,12 +62,6 @@ public class AddEditTaskPresenter  implements AddEditTaskContract.Presenter,
     }
 
     @Override
-    public boolean isDataMissing() {
-        return mIsDataMissing;
-    }
-
-
-    @Override
     public void onTaskLoaded(Task task) {
         // The view may not be able to handle UI updates anymore
         if (mAddTaskView.isActive()) {
@@ -73,9 +73,15 @@ public class AddEditTaskPresenter  implements AddEditTaskContract.Presenter,
 
     @Override
     public void onDataNotAvailable() {
+        // The view may not be able to handle UI updates anymore
         if (mAddTaskView.isActive()) {
             mAddTaskView.showEmptyTaskError();
         }
+    }
+
+    @Override
+    public boolean isDataMissing() {
+        return mIsDataMissing;
     }
 
     private boolean isNewTask() {

@@ -3,9 +3,11 @@ package com.example.sulemanshakil.todoapp.tasks;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 
+import com.example.sulemanshakil.todoapp.addedittask.AddEditTaskActivity;
 import com.example.sulemanshakil.todoapp.data.Task;
 import com.example.sulemanshakil.todoapp.data.source.TasksDataSource;
 import com.example.sulemanshakil.todoapp.data.source.TasksRepository;
+import com.example.sulemanshakil.todoapp.util.EspressoIdlingResource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,6 @@ public class TasksPresenter implements TasksContract.Presenter {
 
     private boolean mFirstLoad = true;
 
-
     public TasksPresenter(@NonNull TasksRepository tasksRepository, @NonNull TasksContract.View tasksView) {
         mTasksRepository = checkNotNull(tasksRepository, "tasksRepository cannot be null");
         mTasksView = checkNotNull(tasksView, "tasksView cannot be null!");
@@ -33,21 +34,25 @@ public class TasksPresenter implements TasksContract.Presenter {
 
     @Override
     public void start() {
-
+        loadTasks(false);
     }
 
     @Override
     public void result(int requestCode, int resultCode) {
-
+        // If a task was successfully added, show snackbar
+        if (AddEditTaskActivity.REQUEST_ADD_TASK == requestCode && Activity.RESULT_OK == resultCode) {
+            mTasksView.showSuccessfullySavedMessage();
+        }
     }
 
     @Override
     public void loadTasks(boolean forceUpdate) {
+        // Simplification for sample: a network reload will be forced on first load.
         loadTasks(forceUpdate || mFirstLoad, true);
         mFirstLoad = false;
     }
 
-    /*
+    /**
      * @param forceUpdate   Pass in true to refresh the data in the {@link TasksDataSource}
      * @param showLoadingUI Pass in true to display a loading icon in the UI
      */
@@ -61,7 +66,7 @@ public class TasksPresenter implements TasksContract.Presenter {
 
         // The network request might be handled in a different thread so make sure Espresso knows
         // that the app is busy until the response is handled.
-    //    EspressoIdlingResource.increment(); // App is busy until further notice
+        EspressoIdlingResource.increment(); // App is busy until further notice
 
         mTasksRepository.getTasks(new TasksDataSource.LoadTasksCallback() {
             @Override
@@ -71,9 +76,9 @@ public class TasksPresenter implements TasksContract.Presenter {
                 // This callback may be called twice, once for the cache and once for loading
                 // the data from the server API, so we check before decrementing, otherwise
                 // it throws "Counter has been corrupted!" exception.
-       //         if (!EspressoIdlingResource.getIdlingResource().isIdleNow()) {
-         //           EspressoIdlingResource.decrement(); // Set app as idle.
-         //       }
+                if (!EspressoIdlingResource.getIdlingResource().isIdleNow()) {
+                    EspressoIdlingResource.decrement(); // Set app as idle.
+                }
 
                 // We filter the tasks based on the requestType
                 for (Task task : tasks) {
@@ -129,6 +134,7 @@ public class TasksPresenter implements TasksContract.Presenter {
             showFilterLabel();
         }
     }
+
     private void showFilterLabel() {
         switch (mCurrentFiltering) {
             case ACTIVE_TASKS:
@@ -186,9 +192,18 @@ public class TasksPresenter implements TasksContract.Presenter {
 
     @Override
     public void clearCompletedTasks() {
-
+        mTasksRepository.clearCompletedTasks();
+        mTasksView.showCompletedTasksCleared();
+        loadTasks(false, false);
     }
 
+    /**
+     * Sets the current task filtering type.
+     *
+     * @param requestType Can be {@link TasksFilterType#ALL_TASKS},
+     *                    {@link TasksFilterType#COMPLETED_TASKS}, or
+     *                    {@link TasksFilterType#ACTIVE_TASKS}
+     */
     @Override
     public void setFiltering(TasksFilterType requestType) {
         mCurrentFiltering = requestType;
@@ -196,6 +211,7 @@ public class TasksPresenter implements TasksContract.Presenter {
 
     @Override
     public TasksFilterType getFiltering() {
-        return null;
+        return mCurrentFiltering;
     }
+
 }

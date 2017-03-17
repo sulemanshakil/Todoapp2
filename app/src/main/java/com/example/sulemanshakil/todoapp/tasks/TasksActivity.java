@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.NavigationView;
+import android.support.test.espresso.IdlingResource;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -15,9 +16,11 @@ import android.view.View;
 
 import com.example.sulemanshakil.todoapp.Injection;
 import com.example.sulemanshakil.todoapp.R;
+import com.example.sulemanshakil.todoapp.statistics.StatisticsActivity;
 import com.example.sulemanshakil.todoapp.util.ActivityUtils;
+import com.example.sulemanshakil.todoapp.util.EspressoIdlingResource;
 
-public class TasksActivity extends AppCompatActivity {
+public class TasksActivity  extends AppCompatActivity {
 
     private static final String CURRENT_FILTERING_KEY = "CURRENT_FILTERING_KEY";
 
@@ -28,7 +31,7 @@ public class TasksActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tasks);
+        setContentView(R.layout.tasks_act);
 
         // Set up the toolbar.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -37,6 +40,7 @@ public class TasksActivity extends AppCompatActivity {
         ab.setHomeAsUpIndicator(R.drawable.ic_menu);
         ab.setDisplayHomeAsUpEnabled(true);
 
+        // Set up the navigation drawer.
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLayout.setStatusBarBackground(R.color.colorPrimaryDark);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -57,6 +61,19 @@ public class TasksActivity extends AppCompatActivity {
         mTasksPresenter = new TasksPresenter(
                 Injection.provideTasksRepository(getApplicationContext()), tasksFragment);
 
+        // Load previously saved state, if available.
+        if (savedInstanceState != null) {
+            TasksFilterType currentFiltering =
+                    (TasksFilterType) savedInstanceState.getSerializable(CURRENT_FILTERING_KEY);
+            mTasksPresenter.setFiltering(currentFiltering);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(CURRENT_FILTERING_KEY, mTasksPresenter.getFiltering());
+
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -97,4 +114,8 @@ public class TasksActivity extends AppCompatActivity {
                 });
     }
 
+    @VisibleForTesting
+    public IdlingResource getCountingIdlingResource() {
+        return EspressoIdlingResource.getIdlingResource();
+    }
 }

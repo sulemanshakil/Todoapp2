@@ -18,7 +18,7 @@ import com.example.sulemanshakil.todoapp.R;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class AddEditTaskFragment extends Fragment implements AddEditTaskContract.View{
+public class AddEditTaskFragment extends Fragment  implements AddEditTaskContract.View {
 
     public static final String ARGUMENT_EDIT_TASK_ID = "EDIT_TASK_ID";
 
@@ -37,10 +37,15 @@ public class AddEditTaskFragment extends Fragment implements AddEditTaskContract
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mPresenter.start();
+    }
+
+    @Override
     public void setPresenter(@NonNull AddEditTaskContract.Presenter presenter) {
         mPresenter = checkNotNull(presenter);
     }
-
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -69,36 +74,29 @@ public class AddEditTaskFragment extends Fragment implements AddEditTaskContract
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mPresenter.start();
-    }
-
-
-    @Override
     public void showEmptyTaskError() {
-
+        Snackbar.make(mTitle, getString(R.string.empty_task_message), Snackbar.LENGTH_LONG).show();
     }
 
     @Override
     public void showTasksList() {
-
+        getActivity().setResult(Activity.RESULT_OK);
+        getActivity().finish();
     }
 
     @Override
     public void setTitle(String title) {
-
+        mTitle.setText(title);
     }
 
     @Override
     public void setDescription(String description) {
-
+        mDescription.setText(description);
     }
 
     @Override
     public boolean isActive() {
-        return false;
+        return isAdded();
     }
-
 
 }

@@ -11,9 +11,11 @@ import android.support.v7.widget.Toolbar;
 import com.example.sulemanshakil.todoapp.Injection;
 import com.example.sulemanshakil.todoapp.R;
 import com.example.sulemanshakil.todoapp.util.ActivityUtils;
+import com.example.sulemanshakil.todoapp.util.EspressoIdlingResource;
 
 
 public class AddEditTaskActivity   extends AppCompatActivity {
+
 
     public static final int REQUEST_ADD_TASK = 1;
 
@@ -84,10 +86,9 @@ public class AddEditTaskActivity   extends AppCompatActivity {
         onBackPressed();
         return true;
     }
-/*
+
     @VisibleForTesting
     public IdlingResource getCountingIdlingResource() {
         return EspressoIdlingResource.getIdlingResource();
     }
-    */
 }
