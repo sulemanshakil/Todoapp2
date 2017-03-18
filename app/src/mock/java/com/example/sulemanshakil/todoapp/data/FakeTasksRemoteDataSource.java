@@ -97,5 +97,4 @@ public class FakeTasksRemoteDataSource  implements TasksDataSource {
             TASKS_SERVICE_DATA.put(task.getId(), task);
         }
     }
-
 }
